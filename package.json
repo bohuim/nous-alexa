@@ -11,9 +11,7 @@
     "request-promise": "^4.2.0"
   },
   "devDependencies": {
-    "alexa-app-server": "^3.0.1",
-    "eslint": "^3.19.0",
-    "supervisor": "^0.12.0"
+    "alexa-app-server": "^3.0.1"
   },
   "scripts": {
     "lint": "$(npm bin)/eslint .",
