@@ -73,12 +73,12 @@ const State = Object.freeze({
 
 Alexa.response.prototype.reply = function(msg)
 {
-    return this.say(msg).shouldEndSession(false);
+    return this.say(msg).shouldEndSession(false)
 }
 
 Alexa.response.prototype.error = function(msg)
 {
-    return this.say(msg).shouldEndSession(true);
+    return this.say(msg).shouldEndSession(true)
 }
 
 app.launch((request, response) =>
