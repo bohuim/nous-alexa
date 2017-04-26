@@ -177,12 +177,16 @@ function setupState(session, response)
             const event = message.event
             const questions = message.questions
             
-            if (event === 'status' && Array.isArray(questions))
+            console.log('--- Got a Message ---')
+            console.log('message: \n', message)
+
+            if (event === 'setup' && Array.isArray(questions))
                 resolve(questions)
         }
 
         pubnub.addListener(listener)
         pubnub.subscribe({ channels: ['nous'] })
+        console.log('--- Listening for Setup Message ---')
     })
     .then(questions => {
         session.set(SessionKey.questions, json(questions))
