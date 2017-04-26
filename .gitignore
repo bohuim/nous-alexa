@@ -1,0 +1,24 @@
+
+# macOS
+.DS_Store
+*.zip
+
+# sublime
+*.sublime-project
+*.sublime-workspace
+
+# npm & node
+.npm
+.node_repl_history
+*node_modules*
+
+# testing
+/coverage
+
+# Logs
+logs
+*.log
+npm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
