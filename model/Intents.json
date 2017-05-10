@@ -1,0 +1,22 @@
+{
+  "intents": [
+    {
+      "intent": "AMAZON.YesIntent"
+    },
+    {
+      "intent": "AMAZON.NoIntent"
+    },
+    {
+      "slots": [
+        {
+          "name": "freeform",
+          "type": "Freeform"
+        }
+      ],
+      "intent": "FreeformIntent"
+    },
+    {
+      "intent": "AMAZON.NextIntent"
+    }
+  ]
+}
