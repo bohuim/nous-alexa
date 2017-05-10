@@ -165,28 +165,42 @@ function setupState(session, response)
     session.set(SessionKey.state, State.setup)
     session.set(SessionKey.invalid, '')
 
+    const aaid = session.get(SessionKey.aaid)
+
+    // publish a message
+    const pubnub = newPubNub()
+    pubnub.publish({
+        channel: aaid,
+        message: {
+            for: 'web',
+            event: 'standby',
+            timeout: 5 * 60 * 1000 // 5 min in ms
+        }
+    })
+
     return new Promise((resolve, reject) => {
         // Listen for PubNub sub message.
-        const pubnub = newPubNub()
-
         const listener = {}
         listener.message = (payload) => {
-            pubnub.destroy()
-
             const message = payload.message
+
             const event = message.event
             const questions = message.questions
             
             console.log('--- Got a Message ---')
             console.log('message: \n', message)
 
-            if (event === 'setup' && Array.isArray(questions))
+            if (message.for === 'alexa' && event === 'setup' && Array.isArray(questions))
+            {
+                pubnub.destroy()
                 resolve(questions)
+            }
         }
 
         pubnub.addListener(listener)
-        pubnub.subscribe({ channels: ['nous'] })
+        pubnub.subscribe({ channels: [aaid] })
         console.log('--- Listening for Setup Message ---')
+        console.log('aaid: ', aaid)
     })
     .then(questions => {
         session.set(SessionKey.questions, json(questions))
@@ -238,14 +252,19 @@ function finishState(questions, answers, session, response)
     item[k.aaid] = session.get(SessionKey.aaid)
     item[k.timestamp] = Math.floor(Date.now() / 1000)
     item[k.questions] = questions
-    item[k.answers] = answers.map(x => x.length > 0 ? x : 'test')
+    item[k.answers] = answers.map(x => x || 'emtpy')
+
+    const items = [item].map(i => ({
+        PutRequest: { Item: i }
+    }))
 
     return rp.post({
         uri: DB.endpoint,
         json: true,
         body: {
-            TableName: k.tableName,
-            Item: item,
+            RequestItems: {
+                NousSessions: items
+            }
         }
     })
     .then(() => {
@@ -322,7 +341,7 @@ app.intent(Intent.freeform,
             return response.reply("Sorry, I didn't quite get that.")
 
         var current = session.get(SessionKey.current)
-        current += (current.length > 0 ? ' ' : '') + 
+        current += (current.length > 0 ? ' ' : '') + input
 
         session.set(SessionKey.current, current)
         return response.reply('Recorded')
